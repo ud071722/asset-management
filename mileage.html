@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 마일리지 계산기 | 자산관리</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.1">
+    <style>
+        /* 글로벌 스타일 완전 차단 및 오버라이드 */
+        html, body {
+            min-width: 0 !important;
+            width: 100% !important;
+            overflow-x: hidden !important;
+            display: block !important;
+            background: #f1f5f9 !important;
+        }
+        body {
+            padding: 1rem !important;
+            margin: 0 !important;
+        }
+        .app-container {
+            max-width: 600px !important; /* 600px 강제 고정 */
+            width: 100% !important;
+            margin: 0 auto !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .mileage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .back-btn {
+            background: var(--text-muted);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .mileage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .vehicle-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .card {
+            background: white !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(0,0,0,0.1) !important;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        .card-header {
+            padding: 0.6rem 0.8rem !important;
+            background: rgba(0,0,0,0.02) !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+        }
+        .card-body {
+            padding: 0.8rem !important;
+        }
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+        .form-group label {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.3rem !important;
+            display: block;
+        }
+        /* 겹침 방지 핵심 스타일 */
+        .input-wrapper {
+            position: relative !important;
+            width: 100% !important;
+        }
+        input[type="number"], input[type="date"] {
+            width: 100% !important;
+            height: 34px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 6px !important;
+            font-size: 0.85rem !important;
+            box-sizing: border-box !important;
+        }
+        input[type="number"] {
+            text-align: right !important;
+            padding-right: 3.5rem !important; /* 숫자와 단위 사이 간격 확보 */
+        }
+        input[type="date"] {
+            padding: 0 0.5rem !important;
+        }
+        .unit {
+            position: absolute !important;
+            right: 0.8rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            font-size: 0.75rem !important;
+            color: #64748b !important;
+            pointer-events: none !important;
+        }
+        .divider {
+            margin: 0.5rem 0 !important;
+            font-size: 0.7rem !important;
+            color: #94a3b8 !important;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            line-height: 0.1em;
+        }
+        .result-item-vertical {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.8rem !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            background: #f8fafc;
+        }
+        .result-item-vertical span {
+            font-size: 0.7rem !important;
+            color: #64748b;
+        }
+        .result-item-vertical strong {
+            font-size: 0.85rem !important;
+        }
+        .highlight-excel-yellow {
+            background: #fef08a !important;
+        }
+        .input-red input {
+            color: #ef4444 !important;
+            font-weight: 700 !important;
+        }
+        .diff-pos { color: #ef4444 !important; }
+        .diff-neg { color: #2563eb !important; }
+        .save-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="mileage-header">
+            <div>
+                <h1 style="font-size: 1.2rem; margin: 0;">차량 마일리지 계산기</h1>
+                <p style="font-size: 0.8rem; color: #64748b; margin: 0;">차량별 독립 관리</p>
+            </div>
+            <div style="display: flex; gap: 0.3rem;">
+                <button class="back-btn" onclick="location.href='investment.html'" style="background: var(--accent-green);">투자 평가</button>
+                <button class="back-btn" onclick="location.href='index.html'">대시보드로</button>
+            </div>
+        </header>
+        
+        <div style="text-align: right; margin-bottom: 0.5rem; font-size: 0.7rem; color: #94a3b8;">
+            최종 저장: <span id="lastSavedTime">없음</span>
+        </div>
+
+        <main class="mileage-grid">
+            <!-- 차량 1 -->
+            <div class="vehicle-column" id="vehicle1">
+                <section class="card">
+                    <div class="card-header">
+                        <input type="text" class="vehicle-name-input" value="차량 1" 
+                               style="background: transparent; border: none; font-size: 0.9rem; font-weight: 700; width: 60%;">
+                        <button class="save-btn individual-save-btn">저장</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>현재일</label>
+                            <input type="date" class="checkDate">
+                        </div>
+                        <div class="form-group input-red">
+                            <label>현재 km</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="currentKm">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="result-item-vertical"><span>기준 km (Top)</span><strong class="resTargetMileage">0 km</strong></div>
+                    <div class="result-item-vertical"><span>현재 마일리지</span><strong class="resCurrentMileage">0 km</strong></div>
+                    <div class="result-item-vertical highlight-excel-yellow"><span>현재차이</span><strong class="resCurrentDiff">0 km</strong></div>
+                    <div class="result-item-vertical"><span>남은 Day</span><strong class="resDaysInfo">0 일</strong></div>
+                    <div class="result-item-vertical highlight-excel-yellow"><span>예상차이(연)</span><strong class="resExpectedAnnualDiff">0 km</strong></div>
+                    <div class="result-item-vertical"><span>예상 km</span><strong class="resExpectedAnnualKm">0 km</strong></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header" style="font-size: 0.8rem; font-weight: 700; color: #475569;">
+                        시작 및 기준 설정
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>시작일</label>
+                            <input type="date" class="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label>시작 시 km</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="startKm">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>기준 km (연간)</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="annualStandard" value="12000">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 차량 2 -->
+            <div class="vehicle-column" id="vehicle2">
+                <section class="card">
+                    <div class="card-header">
+                        <input type="text" class="vehicle-name-input" value="차량 2" 
+                               style="background: transparent; border: none; font-size: 0.9rem; font-weight: 700; width: 60%;">
+                        <button class="save-btn individual-save-btn">저장</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>현재일</label>
+                            <input type="date" class="checkDate">
+                        </div>
+                        <div class="form-group input-red">
+                            <label>현재 km</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="currentKm">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="result-item-vertical"><span>기준 km (Top)</span><strong class="resTargetMileage">0 km</strong></div>
+                    <div class="result-item-vertical"><span>현재 마일리지</span><strong class="resCurrentMileage">0 km</strong></div>
+                    <div class="result-item-vertical highlight-excel-yellow"><span>현재차이</span><strong class="resCurrentDiff">0 km</strong></div>
+                    <div class="result-item-vertical"><span>남은 Day</span><strong class="resDaysInfo">0 일</strong></div>
+                    <div class="result-item-vertical highlight-excel-yellow"><span>예상차이(연)</span><strong class="resExpectedAnnualDiff">0 km</strong></div>
+                    <div class="result-item-vertical"><span>예상 km</span><strong class="resExpectedAnnualKm">0 km</strong></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header" style="font-size: 0.8rem; font-weight: 700; color: #475569;">
+                        시작 및 기준 설정
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>시작일</label>
+                            <input type="date" class="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label>시작 시 km</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="startKm">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>기준 km (연간)</label>
+                            <div class="input-wrapper">
+                                <input type="number" class="annualStandard" value="15000">
+                                <span class="unit">km</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="mileage.js"></script>
+</body>
+
+</html>
