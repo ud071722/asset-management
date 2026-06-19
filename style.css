@@ -513,3 +513,141 @@ input:checked ~ .status-text { opacity: 1; }
         font-size: 0.85rem;
     }
 }
+
+/* ==========================================
+   🌐 Unified Portal Dashboard Styles
+   ========================================== */
+.portal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.portal-card {
+    transition: var(--transition);
+}
+
+.portal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.1);
+    border-color: rgba(79, 70, 229, 0.25);
+}
+
+.portal-card .card-header {
+    background: rgba(79, 70, 229, 0.03);
+    padding: 1.2rem;
+}
+
+.portal-card .card-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.portal-card .card-body {
+    padding: 1.2rem;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 1.2rem;
+}
+
+.portal-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.portal-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    background: rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: var(--transition);
+}
+
+.portal-summary-item:hover {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.portal-summary-item span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.portal-summary-item strong {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.portal-action-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.portal-action-btn:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 12px -1px rgba(79, 70, 229, 0.3);
+}
+
+.portal-card.house-card .card-header {
+    background: rgba(79, 70, 229, 0.04);
+}
+.portal-card.invest-card .card-header {
+    background: rgba(16, 185, 129, 0.04);
+}
+.portal-card.invest-card .portal-action-btn {
+    background: var(--accent-green);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+.portal-card.invest-card .portal-action-btn:hover {
+    background: #059669;
+}
+.portal-card.mileage-card .card-header {
+    background: rgba(245, 158, 11, 0.04);
+}
+.portal-card.mileage-card .portal-action-btn {
+    background: var(--accent-yellow);
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2);
+}
+.portal-card.mileage-card .portal-action-btn:hover {
+    background: #d97706;
+}
+
+@media (max-width: 1024px) {
+    .portal-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+}

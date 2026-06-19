@@ -4,299 +4,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주택 구매 가능성 계산기 | 자산관리</title>
-    <meta name="description" content="현재 자산과 대출을 고려하여 주택 구매 가능성을 계산하는 도구입니다.">
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="주택 구매 가능성 계산기">
-    <meta property="og:description" content="내 자산과 대출을 한 눈에 비교하고 분석하세요.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80">
+    <title>자산 및 차량 종합 관리 대시보드</title>
+    <meta name="description" content="자산관리 및 차량 마일리지를 통합 관리하는 개인 대시보드 포털입니다.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.1">
+    <style>
+        /* 포털 페이지 전용 레이아웃 조정 */
+        body {
+            min-width: auto !important;
+            padding: 1.5rem !important;
+        }
+        .portal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="app-container">
+    <div class="portal-container">
         <header class="app-header">
             <div>
-                <h1>주택 구매 가능성 계산기</h1>
-                <p>내 자산과 대출을 한 눈에 비교하고 분석하세요.</p>
+                <h1>🏠 자산 & 차량 통합 대시보드</h1>
+                <p>개인 자산 현황, 투자 수익 비교 및 차량 운행 실적을 한눈에 관리하세요.</p>
             </div>
             <div class="save-status">
-                <button id="investmentBtn" class="save-btn" onclick="location.href='investment.html?v=1.0'" style="background: var(--accent-green); margin-right: 0.5rem;">투자 평가</button>
-                <button id="mileageBtn" class="save-btn" onclick="location.href='mileage.html?v=1.3'" style="background: var(--accent-yellow); margin-right: 0.5rem;">차량 마일리지</button>
-                <button id="saveBtn" class="save-btn">기록 저장하기</button>
-                최종 저장: <span id="lastSavedTime">저장된 기록 없음</span>
+                최종 클라우드 저장: <span id="portalLastSaved">로딩 중...</span>
             </div>
         </header>
 
-        <div class="content-wrapper">
-            <main class="dashboard">
-                <!-- 1. 목표 주택 및 취득 비용 -->
-                <section class="card section-target">
-                    <div class="card-header">
-                        <h3 style="font-weight: bold;">목표 주택 및 취득 비용</h3>
-                        <span class="badge">필요 자금</span>
-                    </div>
-                    <div class="card-body form-grid">
-                        <div class="form-group primary-input">
-                            <label for="targetPrice">매매가</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="targetPrice" value="160000" step="1000">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="form-group">
-                            <label for="tax">취득세 (자동계산, 1주택 기준)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="tax" value="5280" readonly>
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="realtorBuy">복비 (자동계산, 80% 적용)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="realtorBuy" value="845" readonly>
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group inline">
-                            <label for="legalFee">법무사 등</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="legalFee" value="160">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group inline">
-                            <label for="movingFee">이사비</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="movingFee" value="200">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group inline">
-                            <label for="cleaningFee">청소/선관위</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="cleaningFee" value="90">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-
-                        <div class="summary-row mt-auto">
-                            <span>취득 비용 합계</span>
-                            <strong id="totalCostsSum">0 만원</strong>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 2. 현재 자금 및 기타 자금 -->
-                <section class="card section-current">
-                    <div class="card-header">
-                        <h2>현재 가용 자금</h2>
-                        <span class="badge positive">보유 자금</span>
-                    </div>
-                    <div class="card-body form-grid">
-                        <div class="small-grid">
-                            <div class="form-group primary-input">
-                                <label for="currentHousePrice1">주택1 매매예상가</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="currentHousePrice1" value="70000" step="1000">
-                                    <span class="unit">만원</span>
-                                </div>
-                            </div>
-                            <div class="form-group primary-input">
-                                <label for="currentHousePrice2">주택2 매매예상가</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="currentHousePrice2" value="23000" step="1000">
-                                    <span class="unit">만원</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="cashInvest">현금 (투자금)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="cashInvest" value="9500" step="100">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="existingLoan">대출금 상환 (차감)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="existingLoan" value="2938">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="realtorSell">복비 매도 (자동계산, 80%)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="realtorSell" value="352" readonly>
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="divider">기타 조정 비용 (가용 자금에 추가)</div>
-                        <div class="form-group inline">
-                            <label for="other3Months">3개월 수입 등</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="other3Months" value="900">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group inline">
-                            <label for="otherDT">수입 잔금</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="otherDT" value="500">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-                        <div class="form-group inline">
-                            <label for="otherXM3">XM3 처분</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="otherXM3" value="600">
-                                <span class="unit">만원</span>
-                            </div>
-                        </div>
-
-                        <div class="summary-row mt-auto">
-                            <span>현재 자금 합계</span>
-                            <strong id="totalCurrentSum">0 만원</strong>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 3. 결과 및 대출 요약 -->
-                <section class="card section-summary result-highlight">
-                    <div class="card-header">
-                        <h2>최종 결과 및 대출 요약</h2>
-                        <span class="badge highlight">필요 대출</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="result-breakdown">
-                            <div class="result-item">
-                                <span>총 필요 금액 </span>
-                                <strong id="resTotalRequired">0 만원</strong>
-                            </div>
-                            <div class="result-item">
-                                <span>총 가용 자금 </span>
-                                <strong id="resTotalAvailable">0 만원</strong>
-                            </div>
-                            <div class="result-item highlight highlight-box">
-                                <span>입주시 필요 대출액</span>
-                                <strong id="resRequiredLoan">0 만원</strong>
-                            </div>
-                        </div>
-
-                        <div class="divider">대출 상세 정보</div>
-
-                        <div class="form-grid small-grid">
-                            <div class="form-group">
-                                <label for="loanInterestRate">대출 금리 (%)</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="loanInterestRate" step="0.01" value="4.35">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="loanTerm">대출 기간 (년)</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="loanTerm" value="30">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="divider">추가 이자 (출자금 등)</div>
-                        <div class="form-grid small-grid special-interest">
-                            <div class="form-group">
-                                <label for="contributionAmount">출자금 등 원금</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="contributionAmount" value="5000">
-                                    <span class="unit">만원</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contributionMonthlyInterest">월 이자액</label>
-                                <div class="input-wrapper">
-                                    <input type="number" id="contributionMonthlyInterest" value="23">
-                                    <span class="unit">만원</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="final-payment">
-                            <div class="payment-row">
-                                <span>일반 대출 연이자</span>
-                                <strong id="resYearlyInterest">0 만원</strong>
-                            </div>
-                            <div class="payment-row">
-                                <span>출자금 연이자</span>
-                                <strong id="resContributionYearly">0 만원</strong>
-                            </div>
-                            <div class="payment-row loan-summary-item">
-                                <span>총 월 이자</span>
-                                <strong id="resTotalMonthlyInterest">0 만원</strong>
-                            </div>
-                            <div class="payment-row highlight-payment main-payment">
-                                <span>예상 월 납부금 (원리금균등)</span>
-                                <strong id="resMonthlyPayment">0 만원</strong>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            <aside class="reference-sidebar card">
+        <main class="portal-grid">
+            <!-- 1. 주택 구매 시뮬레이터 카드 -->
+            <section class="card portal-card house-card">
                 <div class="card-header">
-                    <h2>참고 시세</h2>
-                    <div class="header-actions">
-                        <button id="moveUpBtn" class="action-btn" title="위로 이동">↑</button>
-                        <button id="moveDownBtn" class="action-btn" title="아래로 이동">↓</button>
-                        <button id="addRefBtn" class="add-btn">+ 추가</button>
-                        <button id="removeRefBtn" class="remove-btn">- 삭제</button>
-                    </div>
+                    <h2>🏠 주택 구매 시뮬레이터</h2>
                 </div>
                 <div class="card-body">
-                    <div class="ref-list" id="refList">
-                        <div class="ref-row">
-                            <input type="text" placeholder="아파트명" class="ref-input ref-name">
-                            <div class="input-wrapper">
-                                <input type="number" placeholder="시세" class="ref-price" step="1000">
-                                <span class="unit">만원</span>
-                            </div>
-                            <input type="text" placeholder="비고" class="ref-input ref-note">
-                            <label class="ref-check" title="15억 이상 여부">
-                                <input type="checkbox" class="ref-15b">
-                                <span>15억</span>
-                            </label>
-                            <label class="status-toggle" title="구매 가능 여부">
-                                <input type="checkbox" class="ref-status">
-                                <span class="status-slider"></span>
-                                <span class="status-text">가능</span>
-                            </label>
+                    <p class="portal-desc">목표 주택 가격에 따른 취득세, 복비 등의 부대비용과 현재 가용 자산을 종합하여 필요 대출액 및 예상 상환액을 시뮬레이션합니다.</p>
+                    
+                    <div class="portal-summary-list">
+                        <div class="portal-summary-item">
+                            <span>목표 매매가</span>
+                            <strong id="houseTargetPrice">- 만원</strong>
                         </div>
-                        <div class="ref-row">
-                            <input type="text" placeholder="아파트명" class="ref-input ref-name">
-                            <div class="input-wrapper">
-                                <input type="number" placeholder="시세" class="ref-price" step="1000">
-                                <span class="unit">만원</span>
-                            </div>
-                            <input type="text" placeholder="비고" class="ref-input ref-note">
-                            <label class="ref-check" title="15억 이상 여부">
-                                <input type="checkbox" class="ref-15b">
-                                <span>15억</span>
-                            </label>
-                            <label class="status-toggle" title="구매 가능 여부">
-                                <input type="checkbox" class="ref-status">
-                                <span class="status-slider"></span>
-                                <span class="status-text">가능</span>
-                            </label>
+                        <div class="portal-summary-item">
+                            <span>총 가용 자금</span>
+                            <strong id="houseAvailableAsset">- 만원</strong>
+                        </div>
+                        <div class="portal-summary-item" style="border-left: 3px solid var(--primary); background: rgba(79, 70, 229, 0.03);">
+                            <span>필요 대출액</span>
+                            <strong id="houseRequiredLoan" style="color: var(--primary); font-size: 1.05rem;">- 만원</strong>
                         </div>
                     </div>
+
+                    <button class="portal-action-btn" onclick="location.href='house.html'">
+                        시뮬레이터 시작 ➔
+                    </button>
                 </div>
-            </aside>
-        </div>
+            </section>
+
+            <!-- 2. 투자 성과 및 벤치마크 카드 -->
+            <section class="card portal-card invest-card">
+                <div class="card-header">
+                    <h2>📈 투자 성과 및 벤치마크</h2>
+                </div>
+                <div class="card-body">
+                    <p class="portal-desc">가상 예적금(CMA 등)에 거치했을 때의 기회비용과 실제 투자 자산의 평가금액을 실시간으로 비교하여 초과 성과(알파)를 트래킹합니다.</p>
+                    
+                    <div class="portal-summary-list">
+                        <div class="portal-summary-item">
+                            <span>투자 평가금액</span>
+                            <strong id="investEvaluated">- 만원</strong>
+                        </div>
+                        <div class="portal-summary-item">
+                            <span>누적 투자원금</span>
+                            <strong id="investPrincipal">- 만원</strong>
+                        </div>
+                        <div class="portal-summary-item" style="border-left: 3px solid var(--accent-green); background: rgba(16, 185, 129, 0.03);">
+                            <span>예적금 대비 초과성과</span>
+                            <strong id="investOutperform" style="color: var(--accent-green); font-size: 1.05rem;">-%</strong>
+                        </div>
+                    </div>
+
+                    <button class="portal-action-btn" onclick="location.href='investment.html'">
+                        투자 성과 분석 ➔
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. 차량 마일리지 계산기 카드 -->
+            <section class="card portal-card mileage-card">
+                <div class="card-header">
+                    <h2>🚗 차량 마일리지 현황</h2>
+                </div>
+                <div class="card-body">
+                    <p class="portal-desc">보유 차량별 시작일과 시작 km를 기반으로 설정한 연간 운행 기준 대비 현재 마일리지 과달/미달 여부 및 연말 예상 차이를 실시간 산출합니다.</p>
+                    
+                    <div class="portal-summary-list">
+                        <div class="portal-summary-item" id="mileageVehicle1Row">
+                            <span id="mileageV1Name">차량 1</span>
+                            <strong id="mileageV1Diff">- km</strong>
+                        </div>
+                        <div class="portal-summary-item" id="mileageVehicle2Row">
+                            <span id="mileageV2Name">차량 2</span>
+                            <strong id="mileageV2Diff">- km</strong>
+                        </div>
+                        <div class="portal-summary-item" style="border-left: 3px solid var(--accent-yellow); background: rgba(245, 158, 11, 0.03);">
+                            <span>최종 마일리지 체크일</span>
+                            <strong id="mileageCheckDate" style="color: #b45309; font-size: 0.85rem;">-</strong>
+                        </div>
+                    </div>
+
+                    <button class="portal-action-btn" onclick="location.href='mileage.html'">
+                        마일리지 관리 ➔
+                    </button>
+                </div>
+            </section>
+        </main>
     </div>
-    <script type="module" src="app.js"></script>
+    
+    <script type="module" src="dashboard.js?v=20260619_0930"></script>
 </body>
 
 </html>

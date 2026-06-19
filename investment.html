@@ -251,6 +251,9 @@
         .hide-col-g .col-g { display: none !important; }
         .hide-col-j .col-j { display: none !important; }
         .hide-col-k .col-k { display: none !important; }
+        .hide-col-detail .col-detail { display: none !important; }
+        table.spreadsheet td.col-detail { text-align: left !important; }
+        table.spreadsheet td.col-detail input { text-align: left !important; font-weight: normal !important; }
         
         .save-btn {
             background: #10b981;
@@ -373,7 +376,7 @@
                 <p style="font-size: 0.85rem; color: #64748b; margin: 0.2rem 0 0 0;">예적금 기회비용 대비 투자 아웃퍼폼(알파) 실시간 계산</p>
             </div>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <button class="save-btn" id="saveInvestBtn">기록 저장하기</button>
+                <button class="save-btn" id="saveInvestBtn">저장</button>
                 <button class="back-btn" onclick="location.href='index.html'">대시보드로</button>
             </div>
         </header>
@@ -455,19 +458,20 @@
                     <span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(시간 역순 정렬: 최신 월이 맨 위에 위치합니다)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.8rem;">
-                    <button class="add-month-btn" id="addMonthBtn">➕ 새로운 월 추가</button>
-                    <button class="delete-month-btn" id="deleteMonthBtn">➖ 최신 월 삭제</button>
+                    <button class="add-month-btn" id="addMonthBtn">➕ 월추가</button>
+                    <button class="delete-month-btn" id="deleteMonthBtn">➖ 월삭제</button>
                     <div style="font-size: 0.75rem; color: #ef4444; font-weight: 700;">
                         * 매년 1월에 누적이자가 투자원금에 자동 재투자됩니다.
                     </div>
                 </div>
             </div>
             <div class="sheet-body">
-                <table class="spreadsheet hide-col-d hide-col-e hide-col-f hide-col-g hide-col-k" id="investmentTable">
+                <table class="spreadsheet hide-col-d hide-col-e hide-col-f hide-col-g hide-col-k hide-col-detail" id="investmentTable">
                     <thead>
                         <tr>
                             <th style="width: 70px;">월</th>
-                            <th style="width: 100px;">당월 투자금<br>(B)</th>
+                            <th style="width: 110px; position: relative; padding-right: 24px;">당월 투자금<br>(B) <button id="toggleDetailBtn" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; padding: 2px 5px; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; line-height: 1;">+</button></th>
+                            <th style="width: 130px;" class="col-detail">당월투자 상세</th>
                             <th style="width: 110px;">단순 누적원금<br>(C)</th>
                             <th style="width: 110px;" class="benchmark-col col-d">가상 예적금 원금<br>(D)</th>
                             <th style="width: 110px;" class="benchmark-col col-e">가상 예적금 가치<br>(E)</th>
@@ -489,7 +493,7 @@
     </div>
     
     <!-- Firebase 및 로직 바인딩 스크립트 -->
-    <script type="module" src="investment.js?v=20260517_1627"></script>
+    <script type="module" src="investment.js?v=20260619_0915"></script>
 </body>
 
 </html>

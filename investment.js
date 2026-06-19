@@ -94,7 +94,7 @@ function parseFullMonthKey(key) {
     return y * 12 + m;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function init() {
     initColumnToggles();
     loadData();
 
@@ -106,7 +106,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addMonthBtn").addEventListener("click", addNewMonth);
     document.getElementById("deleteMonthBtn").addEventListener("click", deleteRecentMonth);
     document.getElementById("saveInvestBtn").addEventListener("click", saveToFirebase);
-});
+
+    const toggleDetailBtn = document.getElementById("toggleDetailBtn");
+    if (toggleDetailBtn) {
+        console.log("toggleDetailBtn found! Binding click listener.");
+        toggleDetailBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("toggleDetailBtn clicked!");
+            const table = document.getElementById("investmentTable");
+            console.log("Table element:", table);
+            if (table) {
+                const isHidden = table.classList.toggle("hide-col-detail");
+                console.log("Table has hide-col-detail:", isHidden);
+                toggleDetailBtn.textContent = isHidden ? "+" : "-";
+            } else {
+                console.error("Table element '#investmentTable' NOT found!");
+            }
+        });
+    } else {
+        console.error("toggleDetailBtn NOT found in DOM!");
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
 
 // 열 숨김/표시 체크박스 초기화
 function initColumnToggles() {
@@ -198,6 +224,7 @@ function addNewMonth() {
     investments.push({
         month: nextMonthStr,
         invest: 0,
+        detail: "",
         rate: lastRate,
         evaluated: null
     });
@@ -297,6 +324,7 @@ function renderTable() {
         tr.innerHTML = `
             <td class="month-col">${monthDisplay}</td>
             <td><input type="number" class="input-invest" value="${row.invest}" step="10"></td>
+            <td class="col-detail"><input type="text" class="input-detail" value="${row.detail !== undefined && row.detail !== null ? row.detail : ''}" placeholder="-"></td>
             <td class="calculated-col td-simple-principal">0</td>
             <td class="benchmark-col col-d td-benchmark-principal">0</td>
             <td class="benchmark-col col-e td-benchmark-value">0</td>
@@ -321,6 +349,8 @@ function renderTable() {
 
             if (e.target.classList.contains("input-invest")) {
                 row.invest = parseFloat(e.target.value) || 0;
+            } else if (e.target.classList.contains("input-detail")) {
+                row.detail = e.target.value;
             } else if (e.target.classList.contains("input-rate")) {
                 row.rate = (parseFloat(e.target.value) || 0) / 100;
                 
