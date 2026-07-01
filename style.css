@@ -1064,6 +1064,7 @@ input:checked ~ .status-text { opacity: 1; }
 
 .excel-budget-table {
     width: 100%;
+    min-width: 1180px;
     border-collapse: collapse;
     font-size: 0.73rem;
     color: #1e293b;
@@ -1455,4 +1456,34 @@ input:checked ~ .status-text { opacity: 1; }
 .small-pie-legend .chart-legend-item {
     grid-template-columns: auto 1fr auto;
     padding: 2px 0;
+}
+
+/* Budget mobile table readability */
+.excel-budget-table th:nth-child(5),
+.excel-budget-table td:nth-child(5) {
+    min-width: 92px;
+}
+
+.excel-budget-table th:nth-child(10),
+.excel-budget-table td:nth-child(10) {
+    min-width: 260px;
+}
+
+@media (max-width: 768px) {
+    .excel-table-container {
+        padding: 0.35rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .excel-budget-table {
+        min-width: 1280px;
+    }
+
+    .excel-budget-table input.item-name {
+        min-width: 84px;
+    }
+
+    .excel-budget-table input.item-note {
+        min-width: 250px;
+    }
 }
