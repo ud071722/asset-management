@@ -117,6 +117,14 @@
                             <span>총지출</span>
                             <strong id="budgetExpense">- 만원</strong>
                         </div>
+                        <div class="portal-summary-item budget-visibility-toggle" style="justify-content: flex-start; gap: 0.8rem; background: transparent; border: none; padding: 0.2rem 0.8rem; margin-top: -0.5rem;">
+                            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">금액 숨기기</span>
+                            <label class="status-toggle" title="금액 표기 여부">
+                                <input type="checkbox" id="budgetVisibilityToggle">
+                                <span class="status-slider"></span>
+                                <span class="status-text">표기</span>
+                            </label>
+                        </div>
                     </div>
 
                     <button class="portal-action-btn" onclick="location.href='budget.html'">

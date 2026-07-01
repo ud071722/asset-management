@@ -568,13 +568,16 @@ async function saveToFirebase() {
     const data = {
         investments: investments,
         selectedStartMonth: selectedStartMonth,
-        lastSaved: new Date().toLocaleString("ko-KR")
+        lastSaved: new Date().toLocaleString("ko-KR"),
+        updatedAt: Date.now()
     };
 
     try {
-        await setDoc(doc(db, "settings", "investment_evaluation"), data);
-        document.getElementById("lastSavedTime").textContent = data.lastSaved;
+        // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
         localStorage.setItem("investmentData", JSON.stringify(data));
+        document.getElementById("lastSavedTime").textContent = data.lastSaved;
+
+        await setDoc(doc(db, "settings", "investment_evaluation"), data);
 
         saveBtn.textContent = "완료";
         saveBtn.style.background = "#059669";

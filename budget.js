@@ -208,10 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function setActiveBudgetFlow(monthId, data) {
         const activeData = data || await readMonthData(monthId) || cloneDefaultBudgetData();
         bindDataToUI(activeData);
-        await setDoc(doc(db, "settings", "budget_flow"), activeData);
+        // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
         localStorage.setItem(`budgetDataFlow_${monthId}`, JSON.stringify(activeData));
         localStorage.setItem('budgetDataFlow', JSON.stringify(activeData));
         updateLastSavedTime(activeData.lastSaved);
+        await setDoc(doc(db, "settings", "budget_flow"), activeData);
     }
 
     async function deleteMonthDocument(monthId) {
@@ -289,10 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const defaultDataCopy = cloneDefaultBudgetData();
                     bindDataToUI(defaultDataCopy);
-                    await setDoc(doc(db, "monthly_budgets", currentMonthId), defaultDataCopy);
-                    await setDoc(doc(db, "settings", "budget_flow"), defaultDataCopy);
+                    // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
                     localStorage.setItem(`budgetDataFlow_${currentMonthId}`, JSON.stringify(defaultDataCopy));
                     localStorage.setItem('budgetDataFlow', JSON.stringify(defaultDataCopy));
+                    await setDoc(doc(db, "monthly_budgets", currentMonthId), defaultDataCopy);
+                    await setDoc(doc(db, "settings", "budget_flow"), defaultDataCopy);
                 }
 
                 alert(`${monthText} 데이터가 삭제되었습니다.`);
@@ -375,12 +377,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = collectCurrentData();
         const now = new Date();
         data.lastSaved = now.toLocaleString('ko-KR');
+        data.updatedAt = Date.now();
         try {
-            await setDoc(doc(db, "monthly_budgets", activeMonth), data);
-            await setDoc(doc(db, "settings", "budget_flow"), data);
+            // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
             localStorage.setItem(`budgetDataFlow_${activeMonth}`, JSON.stringify(data));
             localStorage.setItem('budgetDataFlow', JSON.stringify(data));
             updateLastSavedTime(data.lastSaved);
+
+            await setDoc(doc(db, "monthly_budgets", activeMonth), data);
+            await setDoc(doc(db, "settings", "budget_flow"), data);
             return true;
         } catch (e) {
             console.error("Save error:", e);

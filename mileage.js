@@ -107,13 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = {
             vehicles: vehiclesData,
-            lastSaved: new Date().toLocaleString('ko-KR')
+            lastSaved: new Date().toLocaleString('ko-KR'),
+            updatedAt: Date.now()
         };
 
         try {
-            await setDoc(doc(db, "settings", "mileage_multi"), data);
-            document.getElementById('lastSavedTime').textContent = data.lastSaved;
+            // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
             localStorage.setItem('mileageDataMulti', JSON.stringify(data));
+            document.getElementById('lastSavedTime').textContent = data.lastSaved;
+
+            await setDoc(doc(db, "settings", "mileage_multi"), data);
             return true;
         } catch (e) {
             console.error("Save error:", e);

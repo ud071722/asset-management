@@ -75,131 +75,184 @@ function parseSafeDate(dateStr) {
 document.addEventListener('DOMContentLoaded', () => {
     // 3가지 모듈의 로딩 및 화면 업데이트 시작
     loadAllData();
+    
+    // 수입지출 표기/미표기 라디오 버튼 이벤트 바인딩 및 초기 상태 설정
+    initBudgetVisibilityToggle();
 });
 
 async function loadAllData() {
     let latestSavedTimes = [];
 
-    // 1. 주택 구매 시뮬레이터 데이터 로드 및 계산
-    try {
-        const docSnap = await getDoc(doc(db, "settings", "main"));
-        let houseData = docSnap.exists() ? docSnap.data() : JSON.parse(localStorage.getItem('assetManagerData'));
-        
-        if (houseData) {
-            if (houseData.lastSaved) {
-                const d = parseSafeDate(houseData.lastSaved);
+    // 로컬 데이터를 먼저 즉시 반영하는 헬퍼 함수
+    function loadLocalFirst(localStorageKey, updateWidgetFunc, defaultData) {
+        let localData = null;
+        try {
+            localData = JSON.parse(localStorage.getItem(localStorageKey));
+        } catch (e) {
+            console.error("Local read error:", e);
+        }
+        if (localData) {
+            updateWidgetFunc(localData);
+            if (localData.updatedAt) {
+                latestSavedTimes.push(new Date(localData.updatedAt));
+            } else if (localData.lastSaved) {
+                const d = parseSafeDate(localData.lastSaved);
                 if (d) latestSavedTimes.push(d);
             }
-            updateHouseWidget(houseData.inputs || houseData);
-        } else {
-            // 기본값 예시 표시
-            updateHouseWidget({
-                targetPrice: 160000,
-                legalFee: 160,
-                movingFee: 200,
-                cleaningFee: 90,
-                currentHousePrice1: 70000,
-                currentHousePrice2: 23000,
-                cashInvest: 9500,
-                existingLoan: 2938,
-                other3Months: 900,
-                otherDT: 500,
-                otherXM3: 600
-            });
+        } else if (defaultData) {
+            updateWidgetFunc(defaultData);
         }
-    } catch (e) {
-        console.error("House data load error:", e);
-        // localStorage 백업 로드
-        let houseData = JSON.parse(localStorage.getItem('assetManagerData'));
-        if (houseData) updateHouseWidget(houseData.inputs || houseData);
+        return localData;
     }
 
-    // 2. 투자 성과 및 벤치마크 데이터 로드 및 계산
-    try {
-        const docSnap = await getDoc(doc(db, "settings", "investment_evaluation"));
-        let investData = docSnap.exists() ? docSnap.data() : JSON.parse(localStorage.getItem('investmentData'));
-        
-        if (investData) {
-            if (investData.lastSaved) {
-                const d = parseSafeDate(investData.lastSaved);
-                if (d) latestSavedTimes.push(d);
-            }
-            updateInvestmentWidget(investData.investments);
-        } else {
-            // 로컬 기본 캐시가 없으면 기본값은 investment.js의 기본 배열 형태 모방
-            document.getElementById("investEvaluated").textContent = "데이터 없음";
-            document.getElementById("investPrincipal").textContent = "- 만원";
-            document.getElementById("investOutperform").textContent = "-%";
-        }
-    } catch (e) {
-        console.error("Investment data load error:", e);
-        let investData = JSON.parse(localStorage.getItem('investmentData'));
-        if (investData) updateInvestmentWidget(investData.investments);
+    // 1. 주택 데이터 로컬 로드
+    let localHouse = loadLocalFirst('assetManagerData', (data) => updateHouseWidget(data.inputs || data), {
+        targetPrice: 160000,
+        legalFee: 160,
+        movingFee: 200,
+        cleaningFee: 90,
+        currentHousePrice1: 70000,
+        currentHousePrice2: 23000,
+        cashInvest: 9500,
+        existingLoan: 2938,
+        other3Months: 900,
+        otherDT: 500,
+        otherXM3: 600
+    });
+
+    // 2. 투자 데이터 로컬 로드
+    let localInvest = loadLocalFirst('investmentData', (data) => updateInvestmentWidget(data.investments || data), null);
+    if (!localInvest) {
+        document.getElementById("investEvaluated").textContent = "데이터 없음";
+        document.getElementById("investPrincipal").textContent = "- 만원";
+        document.getElementById("investOutperform").textContent = "-%";
     }
 
-    // 3. 차량 마일리지 데이터 로드 및 계산
-    try {
-        const docSnap = await getDoc(doc(db, "settings", "mileage_multi"));
-        let mileageData = docSnap.exists() ? docSnap.data() : JSON.parse(localStorage.getItem('mileageDataMulti'));
-        
-        if (mileageData) {
-            if (mileageData.lastSaved) {
-                const d = parseSafeDate(mileageData.lastSaved);
-                if (d) latestSavedTimes.push(d);
-            }
-            updateMileageWidget(mileageData);
-        } else {
-            document.getElementById("mileageV1Name").textContent = "차량 1";
-            document.getElementById("mileageV1Diff").textContent = "데이터 없음";
-            document.getElementById("mileageV2Name").textContent = "차량 2";
-            document.getElementById("mileageV2Diff").textContent = "데이터 없음";
-            document.getElementById("mileageCheckDate").textContent = "-";
-        }
-    } catch (e) {
-        console.error("Mileage data load error:", e);
-        let mileageData = JSON.parse(localStorage.getItem('mileageDataMulti'));
-        if (mileageData) updateMileageWidget(mileageData);
-    } catch (e) {
-        console.error("Mileage data load error:", e);
-        let mileageData = JSON.parse(localStorage.getItem('mileageDataMulti'));
-        if (mileageData) updateMileageWidget(mileageData);
+    // 3. 차량 데이터 로컬 로드
+    let localMileage = loadLocalFirst('mileageDataMulti', updateMileageWidget, null);
+    if (!localMileage) {
+        document.getElementById("mileageV1Name").textContent = "차량 1";
+        document.getElementById("mileageV1Diff").textContent = "데이터 없음";
+        document.getElementById("mileageV2Name").textContent = "차량 2";
+        document.getElementById("mileageV2Diff").textContent = "데이터 없음";
+        document.getElementById("mileageCheckDate").textContent = "-";
     }
 
-    // 4. 월간 수입·지출 데이터 로드 및 계산
-    try {
-        const docSnap = await getDoc(doc(db, "settings", "budget_flow"));
-        let budgetData = docSnap.exists() ? docSnap.data() : JSON.parse(localStorage.getItem('budgetDataFlow'));
-        
-        if (budgetData) {
-            if (budgetData.lastSaved) {
-                const d = parseSafeDate(budgetData.lastSaved);
-                if (d) latestSavedTimes.push(d);
-            }
-            updateBudgetWidget(budgetData);
+    // 4. 예산 데이터 로컬 로드
+    let localBudget = loadLocalFirst('budgetDataFlow', updateBudgetWidget, {
+        incomeYg: 4800000,
+        incomeSd: 4800000,
+        summary: {
+            totalIncome: 960,
+            totalExpense: 958.5,
+            balance: 1.5
+        }
+    });
+
+    // 최종 저장 시간 일차 업데이트
+    updateLastSavedTime();
+
+    // 헬퍼: 저장 시간 표시 업데이트
+    function updateLastSavedTime() {
+        if (latestSavedTimes.length > 0) {
+            latestSavedTimes.sort((a, b) => b - a);
+            document.getElementById('portalLastSaved').textContent = latestSavedTimes[0].toLocaleString('ko-KR');
         } else {
-            updateBudgetWidget({
-                incomeYg: 4800000,
-                incomeSd: 4800000,
-                summary: {
-                    totalIncome: 960,
-                    totalExpense: 958.5,
-                    balance: 1.5
+            document.getElementById('portalLastSaved').textContent = "저장된 기록 없음";
+        }
+    }
+
+    // 데이터 선후 판별 헬퍼
+    function isFirebaseNewer(local, fire) {
+        if (!local) return true;
+        if (!fire) return false;
+        // 1. updatedAt 숫자 비교 우선
+        if (fire.updatedAt !== undefined && local.updatedAt !== undefined) {
+            return Number(fire.updatedAt) > Number(local.updatedAt);
+        }
+        // 2. Fallback: lastSaved 문자열 파싱 비교
+        if (fire.lastSaved && local.lastSaved) {
+            const localTime = parseSafeDate(local.lastSaved);
+            const fireTime = parseSafeDate(fire.lastSaved);
+            return fireTime && localTime && fireTime > localTime;
+        }
+        return false;
+    }
+
+    // Firebase로부터 최신 데이터를 비동기로 받아와 업데이트 (병렬 처리)
+    const fetchPromises = [
+        // 1. 주택
+        (async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "main"));
+                if (docSnap.exists()) {
+                    const fireData = docSnap.data();
+                    if (isFirebaseNewer(localHouse, fireData)) {
+                        updateHouseWidget(fireData.inputs || fireData);
+                        localStorage.setItem('assetManagerData', JSON.stringify(fireData));
+                        const d = fireData.updatedAt ? new Date(fireData.updatedAt) : parseSafeDate(fireData.lastSaved);
+                        if (d) { latestSavedTimes.push(d); updateLastSavedTime(); }
+                    }
                 }
-            });
-        }
-    } catch (e) {
-        console.error("Budget data load error:", e);
-        let budgetData = JSON.parse(localStorage.getItem('budgetDataFlow'));
-        if (budgetData) updateBudgetWidget(budgetData);
-    }
+            } catch (e) {
+                console.error("Firebase house data fetch error:", e);
+            }
+        })(),
+        // 2. 투자
+        (async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "investment_evaluation"));
+                if (docSnap.exists()) {
+                    const fireData = docSnap.data();
+                    if (isFirebaseNewer(localInvest, fireData)) {
+                        updateInvestmentWidget(fireData.investments || fireData);
+                        localStorage.setItem('investmentData', JSON.stringify(fireData));
+                        const d = fireData.updatedAt ? new Date(fireData.updatedAt) : parseSafeDate(fireData.lastSaved);
+                        if (d) { latestSavedTimes.push(d); updateLastSavedTime(); }
+                    }
+                }
+            } catch (e) {
+                console.error("Firebase investment data fetch error:", e);
+            }
+        })(),
+        // 3. 차량
+        (async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "mileage_multi"));
+                if (docSnap.exists()) {
+                    const fireData = docSnap.data();
+                    if (isFirebaseNewer(localMileage, fireData)) {
+                        updateMileageWidget(fireData);
+                        localStorage.setItem('mileageDataMulti', JSON.stringify(fireData));
+                        const d = fireData.updatedAt ? new Date(fireData.updatedAt) : parseSafeDate(fireData.lastSaved);
+                        if (d) { latestSavedTimes.push(d); updateLastSavedTime(); }
+                    }
+                }
+            } catch (e) {
+                console.error("Firebase mileage data fetch error:", e);
+            }
+        })(),
+        // 4. 예산
+        (async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "budget_flow"));
+                if (docSnap.exists()) {
+                    const fireData = docSnap.data();
+                    if (isFirebaseNewer(localBudget, fireData)) {
+                        updateBudgetWidget(fireData);
+                        localStorage.setItem('budgetDataFlow', JSON.stringify(fireData));
+                        const d = fireData.updatedAt ? new Date(fireData.updatedAt) : parseSafeDate(fireData.lastSaved);
+                        if (d) { latestSavedTimes.push(d); updateLastSavedTime(); }
+                    }
+                }
+            } catch (e) {
+                console.error("Firebase budget data fetch error:", e);
+            }
+        })()
+    ];
 
-    // 최종 클라우드 저장 일시 표시
-    if (latestSavedTimes.length > 0) {
-        latestSavedTimes.sort((a, b) => b - a); // 최신 시간순 정렬
-        document.getElementById('portalLastSaved').textContent = latestSavedTimes[0].toLocaleString('ko-KR');
-    } else {
-        document.getElementById('portalLastSaved').textContent = "저장된 기록 없음";
-    }
+    // 백그라운드에서 비동기 처리
+    Promise.all(fetchPromises);
 }
 
 // 🏠 주택 구매 시뮬레이터 카드 정보 렌더링
@@ -411,6 +464,44 @@ function updateBudgetWidget(data) {
     let totalIncomeMan = totalIncome / 10000;
     let totalExpenseMan = totalExpense / 10000;
     
-    document.getElementById("budgetIncome").textContent = totalIncomeMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원";
-    document.getElementById("budgetExpense").textContent = totalExpenseMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원";
+    const budgetIncomeEl = document.getElementById("budgetIncome");
+    const budgetExpenseEl = document.getElementById("budgetExpense");
+    
+    if (budgetIncomeEl && budgetExpenseEl) {
+        budgetIncomeEl.setAttribute("data-actual-value", totalIncomeMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원");
+        budgetExpenseEl.setAttribute("data-actual-value", totalExpenseMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원");
+    }
+    
+    applyBudgetVisibility();
+}
+
+function initBudgetVisibilityToggle() {
+    const toggle = document.getElementById("budgetVisibilityToggle");
+    if (!toggle) return;
+
+    const cachedVisibility = localStorage.getItem("budgetVisibilityState") || "hide";
+    toggle.checked = (cachedVisibility === "show");
+    
+    toggle.addEventListener('change', applyBudgetVisibility);
+}
+
+function applyBudgetVisibility() {
+    const toggle = document.getElementById("budgetVisibilityToggle");
+    if (!toggle) return;
+
+    const visibility = toggle.checked ? 'show' : 'hide';
+    const budgetIncomeEl = document.getElementById("budgetIncome");
+    const budgetExpenseEl = document.getElementById("budgetExpense");
+    
+    if (!budgetIncomeEl || !budgetExpenseEl) return;
+    
+    if (visibility === 'hide') {
+        budgetIncomeEl.textContent = "-";
+        budgetExpenseEl.textContent = "-";
+    } else {
+        budgetIncomeEl.textContent = budgetIncomeEl.getAttribute("data-actual-value") || "- 만원";
+        budgetExpenseEl.textContent = budgetExpenseEl.getAttribute("data-actual-value") || "- 만원";
+    }
+    
+    localStorage.setItem("budgetVisibilityState", visibility);
 }

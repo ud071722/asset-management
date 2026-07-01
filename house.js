@@ -151,11 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const now = new Date();
         data.lastSaved = now.toLocaleString('ko-KR');
+        data.updatedAt = Date.now();
 
         try {
-            await setDoc(doc(db, "settings", "main"), data);
-            document.getElementById('lastSavedTime').textContent = data.lastSaved;
+            // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
             localStorage.setItem('assetManagerData', JSON.stringify(data));
+            document.getElementById('lastSavedTime').textContent = data.lastSaved;
+
+            await setDoc(doc(db, "settings", "main"), data);
             return true;
         } catch (e) {
             console.error("Save error:", e);
