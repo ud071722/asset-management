@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월간 수입·지출 관리 - 자산관리 포털</title>
+    <meta name="description" content="공동 수입과 지출 분담, 카드/현금 흐름을 기록하고 모니터링하는 현금흐름 대시보드입니다.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.1">
+    <style>
+        /* 추가적인 컴팩트 뷰포트용 인라인 보정 */
+        .app-container {
+            max-width: 1800px;
+        }
+        .validation-warning {
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .validation-warning.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div>
+                <h1>📊 월간 수입·지출 관리 (현금흐름)</h1>
+                <p>영기 님과 소땡 님의 월 수입과 지출 결제수단, 인물별 분담 내역을 상세 관리합니다.</p>
+            </div>
+            <div class="header-actions">
+                <button class="save-btn" id="saveBtn">기록 저장하기</button>
+                <div class="save-status">
+                    클라우드 저장: <span id="lastSavedTime">로딩 중...</span>
+                </div>
+                <button class="save-btn" onclick="location.href='index.html'" style="background: var(--text-muted); margin-left: 0.5rem; box-shadow: none;">
+                    대시보드로
+                </button>
+            </div>
+        </header>
+
+        <!-- 0. 월 선택 및 관리 섹션 -->
+        <div class="budget-month-selector">
+            <div class="selector-group">
+                <label for="budgetMonthSelect">📅 조회 월 선택</label>
+                <select id="budgetMonthSelect" class="month-select">
+                    <!-- JS에서 동적 바인딩 -->
+                </select>
+            </div>
+            <div class="selector-actions">
+                <button id="btnNewMonth" class="btn-add-item">+ 새로운 월 추가</button>
+                <button id="btnDeleteMonth" class="btn-delete-month" style="margin-left: 0.5rem;">- 현재 월 삭제</button>
+            </div>
+        </div>
+
+        <!-- 1. 엑셀 레이아웃 단일 통합 테이블 컨테이너 -->
+        <div class="budget-workspace">
+            <div class="excel-table-container">
+            <table class="excel-budget-table" id="excelBudgetTable">
+                <thead>
+                    <tr class="excel-header-main">
+                        <th colspan="3" class="header-income-title">월수입</th>
+                        <th colspan="8" class="header-expense-title">월지출</th>
+                    </tr>
+                    <tr class="excel-header-sub">
+                        <th style="width: 8%;">월수입</th>
+                        <th style="width: 5.6%;">영기</th>
+                        <th style="width: 5.6%;">소땡</th>
+                        <th style="width: 5.6%;">월지출</th>
+                        <th style="width: 5%;">내용</th>
+                        <th style="width: 5.6%; text-align: right;">영기</th>
+                        <th style="width: 5.6%; text-align: right;">소땡</th>
+                        <th style="width: 6%; text-align: right;">지출금액</th>
+                        <th style="width: 4%; text-align: right;">지출비율</th>
+                        <th style="width: 24%;">비고</th>
+                        <th style="width: 3%; text-align: center;">❌</th>
+                    </tr>
+                </thead>
+                <tbody id="excelBudgetTbody">
+                    <!-- JS에서 엑셀과 완전히 똑같이 동적 렌더링 및 rowspan 처리 -->
+                </tbody>
+            </table>
+            </div>
+            <aside class="budget-chart-panel" aria-label="예산 비율 요약">
+                <section class="budget-chart-section">
+                    <h2>카테고리 비율</h2>
+                    <div class="category-pie-chart" id="categoryPieChart"></div>
+                    <div class="chart-legend" id="categoryChartLegend"></div>
+                </section>
+                <section class="budget-chart-section">
+                    <h2>내용별 비율</h2>
+                    <div class="item-ratio-chart" id="itemRatioChart"></div>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <script type="module" src="budget.js?v=20260701_2312"></script>
+</body>
+
+</html>
