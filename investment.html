@@ -12,17 +12,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 글로벌 스타일 오버라이드 및 마일리지 스타일 계승 */
-        html, body {
+        html,
+        body {
             min-width: 0 !important;
             width: 100% !important;
             overflow-x: hidden !important;
             display: block !important;
             background: #f1f5f9 !important;
         }
+
         body {
             padding: 1.5rem !important;
             margin: 0 !important;
         }
+
         .app-container {
             max-width: 1400px !important;
             width: 100% !important;
@@ -30,12 +33,14 @@
             background: transparent !important;
             box-shadow: none !important;
         }
+
         .header-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
+
         .back-btn {
             background: var(--text-muted);
             color: white;
@@ -47,10 +52,11 @@
             cursor: pointer;
             transition: var(--transition);
         }
+
         .back-btn:hover {
             background: #475569;
         }
-        
+
         /* 대시보드 카드 그리드 */
         .metrics-grid {
             display: grid;
@@ -58,10 +64,11 @@
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
+
         .metric-card {
             background: white !important;
             border-radius: 12px !important;
-            border: 1px solid rgba(0,0,0,0.08) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
             padding: 1rem !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
             display: flex;
@@ -69,11 +76,13 @@
             justify-content: space-between;
             min-height: 90px;
         }
+
         .metric-label {
             font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 600;
         }
+
         .metric-value {
             font-size: 1.25rem;
             font-weight: 700;
@@ -81,12 +90,13 @@
             margin-top: 0.25rem;
             word-break: keep-all;
         }
+
         .metric-subtext {
             font-size: 0.7rem;
             color: #94a3b8;
             margin-top: 0.25rem;
         }
-        
+
         /* 분석 기준 설정 바 */
         .setting-bar {
             background: white;
@@ -99,6 +109,7 @@
             margin-bottom: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
+
         .setting-row {
             display: flex;
             justify-content: space-between;
@@ -107,16 +118,19 @@
             flex-wrap: wrap;
             gap: 0.8rem;
         }
+
         .setting-group {
             display: flex;
             align-items: center;
             gap: 0.8rem;
         }
+
         .setting-label {
             font-size: 0.85rem;
             font-weight: 700;
             color: #475569;
         }
+
         .setting-select {
             padding: 0.3rem 0.6rem;
             border-radius: 6px;
@@ -136,6 +150,7 @@
             align-items: center;
             flex-wrap: wrap;
         }
+
         .toggle-checkbox {
             display: flex;
             align-items: center;
@@ -151,23 +166,26 @@
             border: 1px solid #e2e8f0;
             transition: var(--transition);
         }
+
         .toggle-checkbox:hover {
             background: #f1f5f9;
             border-color: #cbd5e1;
         }
+
         .toggle-checkbox input {
             cursor: pointer;
             margin: 0;
         }
-        
+
         /* 스프레드시트 컨테이너 */
         .sheet-card {
             background: white !important;
             border-radius: 12px !important;
-            border: 1px solid rgba(0,0,0,0.08) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
             overflow: hidden;
         }
+
         .sheet-header {
             padding: 0.8rem 1.2rem;
             background: rgba(0, 0, 0, 0.02);
@@ -176,11 +194,12 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .sheet-body {
             overflow: auto;
             max-height: 580px;
         }
-        
+
         /* 테이블 스타일 */
         table.spreadsheet {
             width: 100%;
@@ -189,6 +208,7 @@
             font-size: 0.8rem;
             text-align: right;
         }
+
         table.spreadsheet th {
             background: #f8fafc;
             position: sticky;
@@ -202,6 +222,7 @@
             font-size: 0.75rem;
             z-index: 10;
         }
+
         table.spreadsheet td {
             padding: 0.25rem 0.4rem;
             border-bottom: 1px solid #e2e8f0;
@@ -210,15 +231,18 @@
             color: #334155;
             font-weight: 500;
         }
+
         table.spreadsheet tr:hover {
             background: rgba(79, 70, 229, 0.02);
         }
+
         table.spreadsheet td.month-col {
             text-align: center;
             background: #f8fafc;
             font-weight: 700;
             color: #64748b;
         }
+
         table.spreadsheet td input {
             width: 100%;
             height: 100%;
@@ -231,30 +255,77 @@
             font-weight: 600;
             color: #0f172a;
         }
+
         table.spreadsheet td input:focus {
             background: rgba(79, 70, 229, 0.06);
             border-radius: 4px;
             box-shadow: 0 0 0 1px var(--primary);
         }
-        
+
         /* 하이라이트 및 수익률 스타일 */
-        .pos-value { color: #ef4444 !important; font-weight: 700; }
-        .neg-value { color: #2563eb !important; font-weight: 700; }
-        .calculated-col { background: #faf5ff; color: #5b21b6; }
-        .benchmark-col { background: #f0fdf4; color: #166534; }
-        .highlight-yellow { background: #fef08a !important; font-weight: 700; }
-        
+        .pos-value {
+            color: #ef4444 !important;
+            font-weight: 700;
+        }
+
+        .neg-value {
+            color: #2563eb !important;
+            font-weight: 700;
+        }
+
+        .calculated-col {
+            background: #faf5ff;
+            color: #5b21b6;
+        }
+
+        .benchmark-col {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .highlight-yellow {
+            background: #fef08a !important;
+            font-weight: 700;
+        }
+
         /* 열 숨김 클래스 */
-        .hide-col-d .col-d { display: none !important; }
-        .hide-col-e .col-e { display: none !important; }
-        .hide-col-f .col-f { display: none !important; }
-        .hide-col-g .col-g { display: none !important; }
-        .hide-col-j .col-j { display: none !important; }
-        .hide-col-k .col-k { display: none !important; }
-        .hide-col-detail .col-detail { display: none !important; }
-        table.spreadsheet td.col-detail { text-align: left !important; }
-        table.spreadsheet td.col-detail input { text-align: left !important; font-weight: normal !important; }
-        
+        .hide-col-d .col-d {
+            display: none !important;
+        }
+
+        .hide-col-e .col-e {
+            display: none !important;
+        }
+
+        .hide-col-f .col-f {
+            display: none !important;
+        }
+
+        .hide-col-g .col-g {
+            display: none !important;
+        }
+
+        .hide-col-j .col-j {
+            display: none !important;
+        }
+
+        .hide-col-k .col-k {
+            display: none !important;
+        }
+
+        .hide-col-detail .col-detail {
+            display: none !important;
+        }
+
+        table.spreadsheet td.col-detail {
+            text-align: left !important;
+        }
+
+        table.spreadsheet td.col-detail input {
+            text-align: left !important;
+            font-weight: normal !important;
+        }
+
         .save-btn {
             background: #10b981;
             color: white;
@@ -267,11 +338,12 @@
             transition: var(--transition);
             box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
         }
+
         .save-btn:hover {
             background: #059669;
             box-shadow: 0 6px 10px -1px rgba(16, 185, 129, 0.3);
         }
-        
+
         .add-month-btn {
             background: #e0e7ff;
             color: #4338ca;
@@ -283,10 +355,12 @@
             cursor: pointer;
             transition: var(--transition);
         }
+
         .add-month-btn:hover {
             background: #c7d2fe;
             transform: translateY(-1px);
         }
+
         .delete-month-btn {
             background: #ffe4e6;
             color: #e11d48;
@@ -298,16 +372,17 @@
             cursor: pointer;
             transition: var(--transition);
         }
+
         .delete-month-btn:hover {
             background: #fecdd3;
             transform: translateY(-1px);
         }
-        
+
         /* 차트 카드 스타일 */
         .chart-card {
             background: white !important;
             border-radius: 12px !important;
-            border: 1px solid rgba(0,0,0,0.08) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
             padding: 1.2rem !important;
             margin-bottom: 1.5rem !important;
@@ -315,26 +390,32 @@
             flex-direction: column;
             gap: 1rem;
         }
+
         .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .chart-title {
             font-size: 0.95rem;
             font-weight: 700;
             color: #334155;
         }
+
         .chart-subtitle {
             font-size: 0.75rem;
             color: #64748b;
             font-weight: normal;
         }
+
         .chart-container {
             position: relative;
             width: 100%;
-            height: 420px; /* 1.5배 증가 */
+            height: 420px;
+            /* 1.5배 증가 */
         }
+
         .chart-select {
             background: #f8fafc !important;
             border: 1px solid #cbd5e1 !important;
@@ -352,11 +433,12 @@
             background-position: right 0.5rem center !important;
             background-size: 0.8rem !important;
         }
+
         .chart-select:hover {
             border-color: #6366f1 !important;
             background-color: white !important;
         }
-        
+
         /* 모바일 대응 */
         @media (max-width: 1024px) {
             .metrics-grid {
@@ -370,7 +452,8 @@
     <div class="app-container">
         <header class="header-section">
             <div>
-                <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0; background: linear-gradient(to right, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <h1
+                    style="font-size: 1.5rem; font-weight: 700; margin: 0; background: linear-gradient(to right, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     투자 성과 및 예적금 벤치마크 분석
                 </h1>
                 <p style="font-size: 0.85rem; color: #64748b; margin: 0.2rem 0 0 0;">예적금 기회비용 대비 투자 아웃퍼폼(알파) 실시간 계산</p>
@@ -418,7 +501,8 @@
                     <span class="chart-subtitle">선택 기점월부터의 자산 성장 흐름 시각화 (단위: 만원)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="setting-label" style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-bottom: 0;">📅 분석 기점월:</span>
+                    <span class="setting-label"
+                        style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-bottom: 0;">📅 분석 기점월:</span>
                     <select class="chart-select" id="startMonthSelect">
                         <!-- JavaScript에서 옵션 채움 -->
                     </select>
@@ -436,16 +520,23 @@
                     최종 저장 시간: <span id="lastSavedTime">없음</span>
                 </div>
             </div>
-            
+
             <div class="setting-row" style="border-top: 1px dashed #e2e8f0; padding-top: 0.6rem; margin-top: 0.2rem;">
                 <div class="column-toggles">
-                    <span class="setting-label" style="font-size: 0.8rem; margin-right: 0.2rem;">👁️ 열 표시 설정 (D, E, F, G, K 기본 숨김):</span>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-d" autocomplete="off"> D 예적금 원금</label>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-e" autocomplete="off"> E 예적금 가치</label>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-f" autocomplete="off"> F 당월 가상이자</label>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-g" autocomplete="off"> G 가상 금리</label>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-j" autocomplete="off" checked> J 원금수익률</label>
-                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-k" autocomplete="off"> K 초과수익률</label>
+                    <span class="setting-label" style="font-size: 0.8rem; margin-right: 0.2rem;">👁️ 열 표시 설정 (D, E, F,
+                        G, K 기본 숨김):</span>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-d"
+                            autocomplete="off"> D 예적금 원금</label>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-e"
+                            autocomplete="off"> E 예적금 가치</label>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-f"
+                            autocomplete="off"> F 당월 가상이자</label>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-g"
+                            autocomplete="off"> G 가상 금리</label>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-j"
+                            autocomplete="off" checked> J 원금수익률</label>
+                    <label class="toggle-checkbox"><input type="checkbox" class="col-toggle-cb" data-col="col-k"
+                            autocomplete="off"> K 초과수익률</label>
                 </div>
             </div>
         </section>
@@ -453,24 +544,27 @@
         <!-- 스프레드시트 메인 그리드 -->
         <section class="sheet-card">
             <div class="sheet-header">
-                <div style="font-weight: 700; color: #334155; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div
+                    style="font-weight: 700; color: #334155; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
                     📊 투자 및 예적금 복리 성장 시뮬레이션 그리드
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(시간 역순 정렬: 최신 월이 맨 위에 위치합니다)</span>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(시간 역순 정렬: 최신 월이 맨 위에
+                        위치합니다)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.8rem;">
                     <button class="add-month-btn" id="addMonthBtn">➕ 월추가</button>
                     <button class="delete-month-btn" id="deleteMonthBtn">➖ 월삭제</button>
-                    <div style="font-size: 0.75rem; color: #ef4444; font-weight: 700;">
-                        * 매년 1월에 누적이자가 투자원금에 자동 재투자됩니다.
-                    </div>
                 </div>
             </div>
             <div class="sheet-body">
-                <table class="spreadsheet hide-col-d hide-col-e hide-col-f hide-col-g hide-col-k hide-col-detail" id="investmentTable">
+                <table class="spreadsheet hide-col-d hide-col-e hide-col-f hide-col-g hide-col-k hide-col-detail"
+                    id="investmentTable">
                     <thead>
                         <tr>
                             <th style="width: 70px;">월</th>
-                            <th style="width: 110px; position: relative; padding-right: 24px;">당월 투자금<br>(B) <button id="toggleDetailBtn" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; padding: 2px 5px; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; line-height: 1;">+</button></th>
+                            <th style="width: 110px; position: relative; padding-right: 24px;">당월 투자금<br>(B) <button
+                                    id="toggleDetailBtn"
+                                    style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; padding: 2px 5px; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; line-height: 1;">+</button>
+                            </th>
                             <th style="width: 130px;" class="col-detail">당월투자 상세</th>
                             <th style="width: 110px;">단순 누적원금<br>(C)</th>
                             <th style="width: 110px;" class="benchmark-col col-d">가상 예적금 원금<br>(D)</th>
@@ -491,7 +585,7 @@
             </div>
         </section>
     </div>
-    
+
     <!-- Firebase 및 로직 바인딩 스크립트 -->
     <script type="module" src="investment.js?v=20260619_0915"></script>
 </body>

@@ -159,6 +159,38 @@ async function loadAllData() {
         console.error("Mileage data load error:", e);
         let mileageData = JSON.parse(localStorage.getItem('mileageDataMulti'));
         if (mileageData) updateMileageWidget(mileageData);
+    } catch (e) {
+        console.error("Mileage data load error:", e);
+        let mileageData = JSON.parse(localStorage.getItem('mileageDataMulti'));
+        if (mileageData) updateMileageWidget(mileageData);
+    }
+
+    // 4. 월간 수입·지출 데이터 로드 및 계산
+    try {
+        const docSnap = await getDoc(doc(db, "settings", "budget_flow"));
+        let budgetData = docSnap.exists() ? docSnap.data() : JSON.parse(localStorage.getItem('budgetDataFlow'));
+        
+        if (budgetData) {
+            if (budgetData.lastSaved) {
+                const d = parseSafeDate(budgetData.lastSaved);
+                if (d) latestSavedTimes.push(d);
+            }
+            updateBudgetWidget(budgetData);
+        } else {
+            updateBudgetWidget({
+                incomeYg: 4800000,
+                incomeSd: 4800000,
+                summary: {
+                    totalIncome: 960,
+                    totalExpense: 958.5,
+                    balance: 1.5
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Budget data load error:", e);
+        let budgetData = JSON.parse(localStorage.getItem('budgetDataFlow'));
+        if (budgetData) updateBudgetWidget(budgetData);
     }
 
     // 최종 클라우드 저장 일시 표시
@@ -349,4 +381,36 @@ function calculateVehicleDiff(v) {
     const currentMileage = currentKm - startKm;
     
     return currentMileage - targetMileage;
+}
+
+// 📊 월간 수입·지출 카드 정보 렌더링
+function updateBudgetWidget(data) {
+    if (!data) return;
+    
+    let incomeYg = parseFloat(data.incomeYg) || 0;
+    let incomeSd = parseFloat(data.incomeSd) || 0;
+    let totalIncome = incomeYg + incomeSd; // 원 단위
+    
+    let totalExpense = 0;
+    
+    if (data.items && data.items.length > 0) {
+        data.items.forEach(item => {
+            let amt = parseFloat(item.amount) || 0;
+            totalExpense += amt;
+        });
+    } else {
+        if (data.summary) {
+            totalIncome = (data.summary.totalIncome || 960) * 10000;
+            totalExpense = (data.summary.totalExpense || 958.5) * 10000;
+        } else {
+            totalIncome = 9600000;
+            totalExpense = 9585000;
+        }
+    }
+    
+    let totalIncomeMan = totalIncome / 10000;
+    let totalExpenseMan = totalExpense / 10000;
+    
+    document.getElementById("budgetIncome").textContent = totalIncomeMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원";
+    document.getElementById("budgetExpense").textContent = totalExpenseMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원";
 }

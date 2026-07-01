@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자산 및 차량 종합 관리 대시보드</title>
+    <title>주하네 종합 관리 대시보드</title>
     <meta name="description" content="자산관리 및 차량 마일리지를 통합 관리하는 개인 대시보드 포털입니다.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +16,7 @@
             min-width: auto !important;
             padding: 1.5rem !important;
         }
+
         .portal-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -27,8 +28,8 @@
     <div class="portal-container">
         <header class="app-header">
             <div>
-                <h1>🏠 자산 & 차량 통합 대시보드</h1>
-                <p>개인 자산 현황, 투자 수익 비교 및 차량 운행 실적을 한눈에 관리하세요.</p>
+                <h1>주하네 통합 자산 관리</h1>
+                <p>주택 자산 현황, 투자 수익 비교 및 차량 운행 실적을 한눈에 관리하세요.</p>
             </div>
             <div class="save-status">
                 최종 클라우드 저장: <span id="portalLastSaved">로딩 중...</span>
@@ -43,7 +44,7 @@
                 </div>
                 <div class="card-body">
                     <p class="portal-desc">목표 주택 가격에 따른 취득세, 복비 등의 부대비용과 현재 가용 자산을 종합하여 필요 대출액 및 예상 상환액을 시뮬레이션합니다.</p>
-                    
+
                     <div class="portal-summary-list">
                         <div class="portal-summary-item">
                             <span>목표 매매가</span>
@@ -53,9 +54,11 @@
                             <span>총 가용 자금</span>
                             <strong id="houseAvailableAsset">- 만원</strong>
                         </div>
-                        <div class="portal-summary-item" style="border-left: 3px solid var(--primary); background: rgba(79, 70, 229, 0.03);">
+                        <div class="portal-summary-item"
+                            style="border-left: 3px solid var(--primary); background: rgba(79, 70, 229, 0.03);">
                             <span>필요 대출액</span>
-                            <strong id="houseRequiredLoan" style="color: var(--primary); font-size: 1.05rem;">- 만원</strong>
+                            <strong id="houseRequiredLoan" style="color: var(--primary); font-size: 1.05rem;">-
+                                만원</strong>
                         </div>
                     </div>
 
@@ -71,8 +74,9 @@
                     <h2>📈 투자 성과 및 벤치마크</h2>
                 </div>
                 <div class="card-body">
-                    <p class="portal-desc">가상 예적금(CMA 등)에 거치했을 때의 기회비용과 실제 투자 자산의 평가금액을 실시간으로 비교하여 초과 성과(알파)를 트래킹합니다.</p>
-                    
+                    <p class="portal-desc">가상 예적금(CMA 등)에 거치했을 때의 기회비용과 실제 투자 자산의 평가금액을 실시간으로 비교하여 초과 성과(알파)를 트래킹합니다.
+                    </p>
+
                     <div class="portal-summary-list">
                         <div class="portal-summary-item">
                             <span>투자 평가금액</span>
@@ -82,9 +86,11 @@
                             <span>누적 투자원금</span>
                             <strong id="investPrincipal">- 만원</strong>
                         </div>
-                        <div class="portal-summary-item" style="border-left: 3px solid var(--accent-green); background: rgba(16, 185, 129, 0.03);">
+                        <div class="portal-summary-item"
+                            style="border-left: 3px solid var(--accent-green); background: rgba(16, 185, 129, 0.03);">
                             <span>예적금 대비 초과성과</span>
-                            <strong id="investOutperform" style="color: var(--accent-green); font-size: 1.05rem;">-%</strong>
+                            <strong id="investOutperform"
+                                style="color: var(--accent-green); font-size: 1.05rem;">-%</strong>
                         </div>
                     </div>
 
@@ -94,14 +100,40 @@
                 </div>
             </section>
 
-            <!-- 3. 차량 마일리지 계산기 카드 -->
+            <!-- 3. 월간 수입·지출 관리 카드 -->
+            <section class="card portal-card budget-card">
+                <div class="card-header">
+                    <h2>📊 월간 수입·지출 관리</h2>
+                </div>
+                <div class="card-body">
+                    <p class="portal-desc">가정의 공동 수입 및 각 결제수단(카드, 현금) 지출과 인물별 분담 금액을 비교 분석하고 잔액 흐름을 모니터링합니다.</p>
+
+                    <div class="portal-summary-list">
+                        <div class="portal-summary-item">
+                            <span>총수입</span>
+                            <strong id="budgetIncome">- 만원</strong>
+                        </div>
+                        <div class="portal-summary-item">
+                            <span>총지출</span>
+                            <strong id="budgetExpense">- 만원</strong>
+                        </div>
+                    </div>
+
+                    <button class="portal-action-btn" onclick="location.href='budget.html'">
+                        수입·지출 관리 ➔
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. 차량 마일리지 계산기 카드 -->
             <section class="card portal-card mileage-card">
                 <div class="card-header">
                     <h2>🚗 차량 마일리지 현황</h2>
                 </div>
                 <div class="card-body">
-                    <p class="portal-desc">보유 차량별 시작일과 시작 km를 기반으로 설정한 연간 운행 기준 대비 현재 마일리지 과달/미달 여부 및 연말 예상 차이를 실시간 산출합니다.</p>
-                    
+                    <p class="portal-desc">보유 차량별 시작일과 시작 km를 기반으로 설정한 연간 운행 기준 대비 현재 마일리지 과달/미달 여부 및 연말 예상 차이를 실시간
+                        산출합니다.</p>
+
                     <div class="portal-summary-list">
                         <div class="portal-summary-item" id="mileageVehicle1Row">
                             <span id="mileageV1Name">차량 1</span>
@@ -111,7 +143,8 @@
                             <span id="mileageV2Name">차량 2</span>
                             <strong id="mileageV2Diff">- km</strong>
                         </div>
-                        <div class="portal-summary-item" style="border-left: 3px solid var(--accent-yellow); background: rgba(245, 158, 11, 0.03);">
+                        <div class="portal-summary-item"
+                            style="border-left: 3px solid var(--accent-yellow); background: rgba(245, 158, 11, 0.03);">
                             <span>최종 마일리지 체크일</span>
                             <strong id="mileageCheckDate" style="color: #b45309; font-size: 0.85rem;">-</strong>
                         </div>
@@ -124,7 +157,7 @@
             </section>
         </main>
     </div>
-    
+
     <script type="module" src="dashboard.js?v=20260619_0930"></script>
 </body>
 

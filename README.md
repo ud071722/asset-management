@@ -1,10 +1,10 @@
-# 🏠 통합 자산 & 차량 관리 대시보드 (Personal Dashboard Portal)
+# 통합 자산 & 차량 관리 대시보드 (Personal Dashboard Portal)
 
 개인의 주택 구매 자금 계획, 예적금 기회비용 대비 투자 성과 비교 및 보유 차량별 주행실적(마일리지)을 한눈에 보고 관리할 수 있는 모바일 지원 통합 대시보드 웹 애플리케이션입니다.
 
 ---
 
-## 🚀 주요 기능
+## 주요 기능
 
 ### 1. 통합 대시보드 포털 (`index.html`)
 - 각 기능별 핵심 수치(목표 매매가, 필요 대출액, 투자 평가액, 예적금 대비 초과수익 %, 차량별 마일리지 대비 차이)를 실시간 연산하여 중앙 요약 제공합니다.
@@ -26,20 +26,23 @@
 - **차량별 주행 통계**: 시작일 대비 현재 시점까지 경과일수 기준 적정 주행량(km)과 실제 주행 거리를 비교.
 - **연말 운행 전망**: 현재 페이스 기준 연말 주행 마일리지 예상량 및 연간 기준 km 대비 연말 예상 편차 제공.
 
+### 5. 월간 수입·지출 관리 (`budget.html`)
+- **공동 자금 현황**: 부부 공동 월수입 입력 및 각 카테고리별 실시간 지출 비중 분석.
+
+
 ---
 
-## 🛠 기술 스택
+## 기술 스택
 
 - **Markup**: HTML5 (Semantic Tags)
 - **Styling**: Vanilla CSS3 (Glassmorphism & Mobile Responsive layout)
 - **Scripting**: JavaScript (ES6 Modules)
 - **Database**: Firebase Firestore (v9 Modular SDK)
 - **Charts**: Chart.js (via CDN)
-- **Deployment**: Netlify
 
 ---
 
-## ⚙️ 실행 및 배포 방법
+## 실행 및 배포 방법
 
 ### 1. 로컬 실행
 - 본 프로젝트는 JavaScript ES Modules(import/export)을 활용하므로 브라우저 보안 정책(CORS)상 단순 더블 클릭(`file://`)으로는 실행이 불가능합니다.
