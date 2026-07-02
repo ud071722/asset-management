@@ -140,8 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatNumber(num) {
-        if (num === undefined || num === null || isNaN(num)) return '0';
-        return Number(num).toLocaleString('ko-KR');
+        if (num === undefined || num === null || isNaN(num)) return '';
+        const value = Number(num);
+        if (value === 0) return '-';
+        return value.toLocaleString('ko-KR');
     }
 
     function parseNumber(str) {
