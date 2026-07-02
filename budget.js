@@ -28,7 +28,7 @@ const defaultBudgetData = {
         { category: "living", name: "모임회비", note: "나3만, 소땡 9만", card: 0, cash: 30000, yg: 30000, sd: 90000, amount: 120000 },
         { category: "living", name: "세금", note: "마이빌(35만)+위브(105만)+월세(80) = 220만원, 평균 18만/월", card: 180000, cash: 0, yg: 180000, sd: 40000, amount: 220000 },
         { category: "living", name: "경조사", note: "20만 x 8회 +100, 평균 20만", card: 0, cash: 100000, yg: 100000, sd: 100000, amount: 200000 },
-        { category: "living", name: "기타생활비", note: "", card: 800000, cash: 300000, yg: 1100000, sd: 500000, amount: 1600000 },
+        { category: "living", name: "기타생활비(추정)", note: "", card: 800000, cash: 300000, yg: 1100000, sd: 500000, amount: 1600000 },
 
         // 저축/투자 (saving)
         { category: "saving", name: "여분저축", note: "", card: 0, cash: 2300000, yg: 2300000, sd: 0, amount: 2300000 },
@@ -133,6 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'etc': '기타(주하)'
         };
         return names[cat] || cat;
+    }
+
+    function isAutoBalanceItemName(name) {
+        return name === '기타생활비' || name === '기타생활비(추정)';
     }
 
     function formatNumber(num) {
@@ -480,7 +484,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let isFirstRowOfCategory = true;
             itemsList.forEach((item) => {
                 const tr = document.createElement('tr');
-                tr.className = 'budget-row';
+                const isAutoBalanceRow = item.category === 'living' && isAutoBalanceItemName(item.name);
+                tr.className = isAutoBalanceRow ? 'budget-row auto-balance-row' : 'budget-row';
                 tr.setAttribute('data-category', cat);
                 let html = '';
                 if (isFirstRow) {
@@ -515,9 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     isFirstRowOfCategory = false;
                 }
                 html += `
-                    <td><input type="text" class="item-name" value="${item.name}"></td>
-                    <td class="cell-yg-share"><input type="text" class="item-yg" value="${formatNumber(item.yg)}"></td>
-                    <td class="cell-sd-share"><input type="text" class="item-sd" value="${formatNumber(item.sd)}"></td>
+                    <td><input type="text" class="item-name" value="${isAutoBalanceRow ? '기타생활비(추정)' : item.name}" ${isAutoBalanceRow ? 'readonly' : ''}></td>
+                    <td class="cell-yg-share"><input type="text" class="item-yg" value="${formatNumber(item.yg)}" ${isAutoBalanceRow ? 'readonly' : ''}></td>
+                    <td class="cell-sd-share"><input type="text" class="item-sd" value="${formatNumber(item.sd)}" ${isAutoBalanceRow ? 'readonly' : ''}></td>
                     <td class="cell-amount"><input type="text" class="item-amount" value="${formatNumber(item.amount)}" readonly></td>
                     <td class="cell-ratio"></td>
                     <td><input type="text" class="item-note" value="${item.note}"></td>
@@ -693,6 +698,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (summaryTotalIncome) {
             summaryTotalIncome.textContent = formatNumber(totalInc);
         }
+
+        const autoBalanceRows = document.querySelectorAll('#excelBudgetTbody tr.auto-balance-row');
+        autoBalanceRows.forEach(row => {
+            const nameInput = row.querySelector('.item-name');
+            if (nameInput) nameInput.value = '기타생활비(추정)';
+            const otherYgTotal = Array.from(document.querySelectorAll('#excelBudgetTbody tr.budget-row:not(.auto-balance-row) .item-yg'))
+                .reduce((sum, input) => sum + parseNumber(input.value), 0);
+            const otherSdTotal = Array.from(document.querySelectorAll('#excelBudgetTbody tr.budget-row:not(.auto-balance-row) .item-sd'))
+                .reduce((sum, input) => sum + parseNumber(input.value), 0);
+            const estimatedYg = ygInc - otherYgTotal;
+            const estimatedSd = sdInc - otherSdTotal;
+            row.querySelector('.item-yg').value = formatNumber(estimatedYg);
+            row.querySelector('.item-sd').value = formatNumber(estimatedSd);
+            row.querySelector('.item-amount').value = formatNumber(estimatedYg + estimatedSd);
+        });
 
         let grandYgVal = 0;
         let grandSdVal = 0;
