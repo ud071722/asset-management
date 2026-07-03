@@ -46,46 +46,14 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+    gap: 1rem;
     animation: fadeInDown 0.8s ease;
 }
 
-.save-status {
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.6);
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--card-border);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
-
-.save-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.4rem 1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    margin-right: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
-}
-
-.save-btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 10px -1px rgba(79, 70, 229, 0.3);
-}
-
-.save-status span {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.app-header h1 {
+.header-title-area h1 {
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
@@ -94,9 +62,71 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-.app-header p {
+.header-title-area p {
     color: var(--text-muted);
     font-size: 0.95rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.save-status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.75);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    white-space: nowrap;
+}
+
+.save-status span {
+    font-weight: 600;
+    color: var(--primary);
+    margin-left: 0.3rem;
+}
+
+.save-btn {
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.save-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px -1px rgba(16, 185, 129, 0.3);
+}
+
+.back-btn {
+    background: var(--text-muted);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.back-btn:hover {
+    background: #475569;
+    transform: translateY(-1px);
 }
 
 .content-wrapper {
@@ -411,23 +441,42 @@ input:checked ~ .status-text { opacity: 1; }
 @media (max-width: 768px) {
     .app-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.8rem;
+        align-items: stretch;
+        gap: 0.75rem;
         margin-bottom: 1.2rem;
     }
     
-    .save-status {
-        width: 100%;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 0.6rem;
+    .header-title-area h1 {
+        font-size: 1.5rem;
     }
     
-    .save-btn {
-        margin-right: 0 !important;
-        flex: 1 1 calc(50% - 0.25rem); /* 버튼이 2개씩 균등 너비로 차도록 설정 */
+    .header-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .header-actions .save-btn,
+    .header-actions .back-btn {
+        flex: 1 1 calc(50% - 0.25rem);
         text-align: center;
-        padding: 0.5rem 0.8rem;
+        margin: 0 !important;
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+    
+    .header-actions .back-btn:only-of-type,
+    .header-actions .save-btn:only-of-type {
+        flex: 1 1 100%;
+    }
+    
+    .header-actions .save-status {
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: center;
+        padding: 0.6rem;
         font-size: 0.8rem;
     }
     
@@ -1486,4 +1535,13 @@ input:checked ~ .status-text { opacity: 1; }
     .excel-budget-table input.item-note {
         min-width: 250px;
     }
+}
+
+/* Auto-balanced estimated living expense row */
+.excel-budget-table tr.auto-balance-row .item-name,
+.excel-budget-table tr.auto-balance-row .item-yg,
+.excel-budget-table tr.auto-balance-row .item-sd {
+    background-color: #fde047 !important;
+    color: #713f12 !important;
+    font-weight: 800 !important;
 }

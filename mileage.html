@@ -35,16 +35,7 @@
             align-items: center;
             margin-bottom: 1rem;
         }
-        .back-btn {
-            background: var(--text-muted);
-            color: white;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
+
         .mileage-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -156,19 +147,18 @@
 
 <body>
     <div class="app-container">
-        <header class="mileage-header">
-            <div>
-                <h1 style="font-size: 1.2rem; margin: 0;">차량 마일리지 계산기</h1>
-                <p style="font-size: 0.8rem; color: #64748b; margin: 0;">차량별 독립 관리</p>
+        <header class="app-header">
+            <div class="header-title-area">
+                <h1>차량 마일리지 계산기</h1>
+                <p>차량별 독립 관리</p>
             </div>
-            <div style="display: flex; gap: 0.3rem;">
-                <button class="back-btn" onclick="location.href='index.html'">대시보드로</button>
+            <div class="header-actions">
+                <button class="back-btn" onclick="location.href='index.html'">홈화면</button>
+                <div class="save-status">
+                    최종 저장: <span id="lastSavedTime">없음</span>
+                </div>
             </div>
         </header>
-        
-        <div style="text-align: right; margin-bottom: 0.5rem; font-size: 0.7rem; color: #94a3b8;">
-            최종 저장: <span id="lastSavedTime">없음</span>
-        </div>
 
         <main class="mileage-grid">
             <!-- 차량 1 -->

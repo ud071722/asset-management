@@ -41,21 +41,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .back-btn {
-            background: var(--text-muted);
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
 
-        .back-btn:hover {
-            background: #475569;
-        }
 
         /* 대시보드 카드 그리드 */
         .metrics-grid {
@@ -326,23 +312,7 @@
             font-weight: normal !important;
         }
 
-        .save-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
-        }
 
-        .save-btn:hover {
-            background: #059669;
-            box-shadow: 0 6px 10px -1px rgba(16, 185, 129, 0.3);
-        }
 
         .add-month-btn {
             background: #e0e7ff;
@@ -450,17 +420,17 @@
 
 <body>
     <div class="app-container">
-        <header class="header-section">
-            <div>
-                <h1
-                    style="font-size: 1.5rem; font-weight: 700; margin: 0; background: linear-gradient(to right, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    투자 성과 및 예적금 벤치마크 분석
-                </h1>
-                <p style="font-size: 0.85rem; color: #64748b; margin: 0.2rem 0 0 0;">예적금 기회비용 대비 투자 아웃퍼폼(알파) 실시간 계산</p>
+        <header class="app-header">
+            <div class="header-title-area">
+                <h1>투자 성과 및 예적금 벤치마크 분석</h1>
+                <p>예적금 기회비용 대비 투자 아웃퍼폼(알파) 실시간 계산</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <button class="save-btn" id="saveInvestBtn">저장</button>
-                <button class="back-btn" onclick="location.href='index.html'">대시보드로</button>
+            <div class="header-actions">
+                <button class="save-btn" id="saveInvestBtn">기록</button>
+                <button class="back-btn" onclick="location.href='index.html'">홈화면</button>
+                <div class="save-status">
+                    최종 저장: <span id="lastSavedTime">없음</span>
+                </div>
             </div>
         </header>
 
@@ -516,12 +486,6 @@
         <!-- 분석 기준 설정 및 열 표시 설정 바 -->
         <section class="setting-bar">
             <div class="setting-row">
-                <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">
-                    최종 저장 시간: <span id="lastSavedTime">없음</span>
-                </div>
-            </div>
-
-            <div class="setting-row" style="border-top: 1px dashed #e2e8f0; padding-top: 0.6rem; margin-top: 0.2rem;">
                 <div class="column-toggles">
                     <span class="setting-label" style="font-size: 0.8rem; margin-right: 0.2rem;">👁️ 열 표시 설정 (D, E, F,
                         G, K 기본 숨김):</span>

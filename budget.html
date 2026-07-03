@@ -31,18 +31,16 @@
 <body>
     <div class="app-container">
         <header class="app-header">
-            <div>
+            <div class="header-title-area">
                 <h1>📊 월간 수입·지출 관리 (현금흐름)</h1>
                 <p>영기 님과 소땡 님의 월 수입과 지출 결제수단, 인물별 분담 내역을 상세 관리합니다.</p>
             </div>
             <div class="header-actions">
-                <button class="save-btn" id="saveBtn">기록 저장하기</button>
+                <button class="save-btn" id="saveBtn">기록</button>
+                <button class="back-btn" onclick="location.href='index.html'">홈화면</button>
                 <div class="save-status">
-                    클라우드 저장: <span id="lastSavedTime">로딩 중...</span>
+                    최종 저장: <span id="lastSavedTime">로딩 중...</span>
                 </div>
-                <button class="save-btn" onclick="location.href='index.html'" style="background: var(--text-muted); margin-left: 0.5rem; box-shadow: none;">
-                    대시보드로
-                </button>
             </div>
         </header>
 

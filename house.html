@@ -20,14 +20,16 @@
 <body>
     <div class="app-container">
         <header class="app-header">
-            <div>
+            <div class="header-title-area">
                 <h1>주택 구매 가능성 계산기</h1>
                 <p>내 자산과 대출을 한 눈에 비교하고 분석하세요.</p>
             </div>
-            <div class="save-status">
-                <button id="saveBtn" class="save-btn" style="margin-right: 0.5rem;">기록 저장하기</button>
-                <button id="backBtn" class="save-btn" onclick="location.href='index.html'" style="background: var(--text-muted); margin-right: 0.5rem;">대시보드로</button>
-                최종 저장: <span id="lastSavedTime">저장된 기록 없음</span>
+            <div class="header-actions">
+                <button id="saveBtn" class="save-btn">기록</button>
+                <button id="backBtn" class="back-btn" onclick="location.href='index.html'">홈화면</button>
+                <div class="save-status">
+                    최종 저장: <span id="lastSavedTime">저장된 기록 없음</span>
+                </div>
             </div>
         </header>
 
