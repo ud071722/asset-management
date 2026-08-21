@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryPieChart = document.getElementById('categoryPieChart');
     const categoryChartLegend = document.getElementById('categoryChartLegend');
     const itemRatioChart = document.getElementById('itemRatioChart');
+    let monthLoadPromise = Promise.resolve();
 
     // 카테고리 키 맵
     const categories = ['living', 'saving', 'insurance', 'debt', 'etc'];
@@ -231,9 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnNewMonth) {
-        btnNewMonth.addEventListener('click', () => {
+        btnNewMonth.addEventListener('click', async () => {
+            // 조회 월 로딩이 끝난 뒤 화면에 최종 반영된 값을 복사 원본으로 사용한다.
+            await monthLoadPromise;
             const copiedData = collectCurrentData();
+            const sourceMonth = budgetMonthSelect.value;
             const today = new Date();
+            delete copiedData.lastSaved;
+            delete copiedData.updatedAt;
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const baseMonth = `${year}-${month}`;
@@ -253,6 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
             budgetMonthSelect.value = formattedMonth;
             bindDataToUI(copiedData);
             updateLastSavedTime(null);
+
+            console.info(`새 월 ${formattedMonth}에 조회 월 ${sourceMonth}의 현재 화면 데이터를 복사했습니다.`);
         });
     }
 
@@ -340,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (budgetMonthSelect) {
         budgetMonthSelect.addEventListener('change', () => {
-            loadMonthData(budgetMonthSelect.value);
+            monthLoadPromise = loadMonthData(budgetMonthSelect.value);
         });
     }
 
