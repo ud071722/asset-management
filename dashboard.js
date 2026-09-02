@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 // Firebase 설정
 const firebaseConfig = {
@@ -13,18 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-// 월 포맷팅 헬퍼
-function formatMonthText(val) {
-    if (!val) return '';
-    const parts = val.replace(/\./g, '-').split('-');
-    if (parts.length === 3) {
-        return `${parts[0]}년 ${parseInt(parts[1])}월 -${parts[2]}`;
-    } else if (parts.length === 2) {
-        return `${parts[0]}년 ${parseInt(parts[1])}월`;
-    }
-    return val;
-}
 
 // 부동산 중개 수수료 계산 함수 (app.js / house.js 동기화)
 function getRealtorFee(price) {
@@ -150,33 +138,8 @@ async function loadAllData() {
         document.getElementById("mileageCheckDate").textContent = "-";
     }
 
-    // 4. 예산 데이터 로컬 로드 (최종 조회월 우선 탐색)
-    let lastViewedMonth = localStorage.getItem('lastViewedBudgetMonth');
-    let localBudgetKey = (lastViewedMonth && localStorage.getItem(`budgetDataFlow_${lastViewedMonth}`)) 
-        ? `budgetDataFlow_${lastViewedMonth}` 
-        : 'budgetDataFlow';
-
-    // 로컬 스토리지에 존재하는 월 목록 중 가장 최신 월 찾기
-    if (!lastViewedMonth) {
-        try {
-            let localMonths = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (k && k.startsWith('budgetDataFlow_')) {
-                    localMonths.push(k.replace('budgetDataFlow_', ''));
-                }
-            }
-            if (localMonths.length > 0) {
-                localMonths.sort((a, b) => b.localeCompare(a));
-                lastViewedMonth = localMonths[0];
-                localBudgetKey = `budgetDataFlow_${lastViewedMonth}`;
-            }
-        } catch (err) {
-            console.warn("Local months scan error:", err);
-        }
-    }
-
-    let localBudget = loadLocalFirst(localBudgetKey, (data) => updateBudgetWidget(data, lastViewedMonth), {
+    // 4. 예산 데이터 로컬 로드
+    let localBudget = loadLocalFirst('budgetDataFlow', updateBudgetWidget, {
         incomeYg: 4800000,
         incomeSd: 4800000,
         summary: {
@@ -269,61 +232,17 @@ async function loadAllData() {
                 console.error("Firebase mileage data fetch error:", e);
             }
         })(),
-        // 4. 예산 (monthly_budgets 컬렉션에서 최종 조회월/최신월 조회)
+        // 4. 예산
         (async () => {
             try {
-                let targetMonthId = localStorage.getItem('lastViewedBudgetMonth');
-                let targetDocData = null;
-
-                try {
-                    const querySnapshot = await getDocs(collection(db, "monthly_budgets"));
-                    let validMonths = [];
-                    let docsMap = {};
-                    querySnapshot.forEach((d) => {
-                        const docData = d.data();
-                        if (docData && !docData.isDeleted) {
-                            validMonths.push(d.id);
-                            docsMap[d.id] = docData;
-                        }
-                    });
-
-                    validMonths.sort((a, b) => b.localeCompare(a));
-
-                    if (validMonths.length > 0) {
-                        // 사용자가 마지막으로 본 월이 유효하면 해당 월을 사용, 없으면 가장 최신 월 사용
-                        if (!targetMonthId || !docsMap[targetMonthId]) {
-                            targetMonthId = validMonths[0];
-                        }
-                        targetDocData = docsMap[targetMonthId];
-                    }
-                } catch (colErr) {
-                    console.warn("Firebase monthly_budgets collection query fallback:", colErr);
-                }
-
-                // Fallback: settings/budget_flow 단일 문서
-                if (!targetDocData) {
-                    const docSnap = await getDoc(doc(db, "settings", "budget_flow"));
-                    if (docSnap.exists()) {
-                        targetDocData = docSnap.data();
-                    }
-                }
-
-                if (targetDocData) {
-                    if (isFirebaseNewer(localBudget, targetDocData)) {
-                        updateBudgetWidget(targetDocData, targetMonthId);
-                        localStorage.setItem('budgetDataFlow', JSON.stringify(targetDocData));
-                        if (targetMonthId) {
-                            localStorage.setItem(`budgetDataFlow_${targetMonthId}`, JSON.stringify(targetDocData));
-                            localStorage.setItem('lastViewedBudgetMonth', targetMonthId);
-                        }
-                        const d = targetDocData.updatedAt ? new Date(targetDocData.updatedAt) : parseSafeDate(targetDocData.lastSaved);
+                const docSnap = await getDoc(doc(db, "settings", "budget_flow"));
+                if (docSnap.exists()) {
+                    const fireData = docSnap.data();
+                    if (isFirebaseNewer(localBudget, fireData)) {
+                        updateBudgetWidget(fireData);
+                        localStorage.setItem('budgetDataFlow', JSON.stringify(fireData));
+                        const d = fireData.updatedAt ? new Date(fireData.updatedAt) : parseSafeDate(fireData.lastSaved);
                         if (d) { latestSavedTimes.push(d); updateLastSavedTime(); }
-                    } else if (targetMonthId) {
-                        // 로컬 데이터가 최신이더라도 기준월 표시는 업데이트
-                        const budgetMonthEl = document.getElementById("budgetMonthDisplay");
-                        if (budgetMonthEl) {
-                            budgetMonthEl.textContent = formatMonthText(targetMonthId);
-                        }
                     }
                 }
             } catch (e) {
@@ -518,7 +437,7 @@ function calculateVehicleDiff(v) {
 }
 
 // 📊 월간 수입·지출 카드 정보 렌더링
-function updateBudgetWidget(data, monthId) {
+function updateBudgetWidget(data) {
     if (!data) return;
     
     let incomeYg = parseFloat(data.incomeYg) || 0;
@@ -547,16 +466,10 @@ function updateBudgetWidget(data, monthId) {
     
     const budgetIncomeEl = document.getElementById("budgetIncome");
     const budgetExpenseEl = document.getElementById("budgetExpense");
-    const budgetMonthEl = document.getElementById("budgetMonthDisplay");
     
     if (budgetIncomeEl && budgetExpenseEl) {
         budgetIncomeEl.setAttribute("data-actual-value", totalIncomeMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원");
         budgetExpenseEl.setAttribute("data-actual-value", totalExpenseMan.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + " 만원");
-    }
-
-    if (budgetMonthEl) {
-        let displayMonth = monthId || localStorage.getItem('lastViewedBudgetMonth') || '';
-        budgetMonthEl.textContent = displayMonth ? formatMonthText(displayMonth) : '최신 데이터';
     }
     
     applyBudgetVisibility();

@@ -218,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
         localStorage.setItem(`budgetDataFlow_${monthId}`, JSON.stringify(activeData));
         localStorage.setItem('budgetDataFlow', JSON.stringify(activeData));
-        localStorage.setItem('lastViewedBudgetMonth', monthId);
         updateLastSavedTime(activeData.lastSaved);
         await setDoc(doc(db, "settings", "budget_flow"), activeData);
     }
@@ -258,9 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = formatMonthText(formattedMonth);
             budgetMonthSelect.insertBefore(option, budgetMonthSelect.options[0]);
             budgetMonthSelect.value = formattedMonth;
-            localStorage.setItem('lastViewedBudgetMonth', formattedMonth);
-            localStorage.setItem('budgetDataFlow', JSON.stringify(copiedData));
-            localStorage.setItem(`budgetDataFlow_${formattedMonth}`, JSON.stringify(copiedData));
             bindDataToUI(copiedData);
             updateLastSavedTime(null);
 
@@ -311,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
                     localStorage.setItem(`budgetDataFlow_${currentMonthId}`, JSON.stringify(defaultDataCopy));
                     localStorage.setItem('budgetDataFlow', JSON.stringify(defaultDataCopy));
-                    localStorage.setItem('lastViewedBudgetMonth', currentMonthId);
                     await setDoc(doc(db, "monthly_budgets", currentMonthId), defaultDataCopy);
                     await setDoc(doc(db, "settings", "budget_flow"), defaultDataCopy);
                 }
@@ -319,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(`${monthText} 데이터가 삭제되었습니다.`);
             } catch (e) {
                 console.error("Delete error:", e);
-                alert("삭제 처리 중 오류가 발생했습니다: " + e.message);
+                alert("\uC0AD\uC81C \uCC28\uB9AC \uC911 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4: " + e.message);
             } finally {
                 btnDeleteMonth.disabled = false;
                 btnDeleteMonth.textContent = originalText;
@@ -401,7 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // 로컬에 먼저 저장하여 인터넷/Firestore 연결 상태와 상관없이 데이터 보존
             localStorage.setItem(`budgetDataFlow_${activeMonth}`, JSON.stringify(data));
             localStorage.setItem('budgetDataFlow', JSON.stringify(data));
-            localStorage.setItem('lastViewedBudgetMonth', activeMonth);
             updateLastSavedTime(data.lastSaved);
 
             await setDoc(doc(db, "monthly_budgets", activeMonth), data);
@@ -409,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         } catch (e) {
             console.error("Save error:", e);
-            alert("저장 에러: " + e.message);
+            alert("\uC800\uC7A5 \uC5D0\uB7EC: " + e.message);
             return false;
         }
     }
@@ -461,10 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (months.length > 0) {
-            const savedLastViewed = localStorage.getItem('lastViewedBudgetMonth');
-            const initialMonth = (savedLastViewed && months.includes(savedLastViewed)) ? savedLastViewed : months[0];
-            budgetMonthSelect.value = initialMonth;
-            await loadMonthData(initialMonth);
+            budgetMonthSelect.value = months[0];
+            await loadMonthData(months[0]);
         }
     }
 
@@ -473,8 +465,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let data = await readMonthData(monthId);
             if (!data) data = cloneDefaultBudgetData();
             localStorage.setItem(`budgetDataFlow_${monthId}`, JSON.stringify(data));
-            localStorage.setItem('budgetDataFlow', JSON.stringify(data));
-            localStorage.setItem('lastViewedBudgetMonth', monthId);
             bindDataToUI(data);
             updateLastSavedTime(data.lastSaved);
         } catch (e) {
